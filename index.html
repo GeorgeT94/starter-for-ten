@@ -6,7 +6,7 @@
 <title>Starter for Ten</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&display=swap">
 <style>
-:root{--bg:#fbfaf7;--ink:#000;--mute:#4a4a4a;--line:#d9d9d9;--rule:#1a1a1a;--blue:#0b5cad;--red:#c8102e;--ok:#0f7b3f;--okbg:#e6f4ec;--bad:#b3261e;--badbg:#fbe9e7;--soft:#f4f4f2;
+:root{--bg:#f2efe6;--ink:#000;--mute:#4a4a4a;--line:#d3cebf;--rule:#1a1a1a;--blue:#0b5cad;--red:#c8102e;--ok:#0f7b3f;--okbg:#d3efdf;--bad:#b3261e;--badbg:#f8d9d5;--soft:#e8e4d8;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 *{box-sizing:border-box}
 html{height:100%}
@@ -26,9 +26,9 @@ table.board{width:100%;border-collapse:collapse;margin-bottom:24px;font-size:.95
 .board th,.board td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
 .board th:first-child,.board td:first-child{text-align:left;font-weight:600}
 .board thead th{border-bottom:2px solid var(--rule);font-weight:700}
-.box{display:inline-block;width:22px;height:22px;border-radius:3px;background:var(--soft);border:1px solid var(--line);vertical-align:middle}
-.box.ok{background:var(--ok);border-color:var(--ok)}.box.bad{background:var(--bad);border-color:var(--bad)}
-.box.cur{border:2px solid var(--blue)}
+.box{display:inline-block;width:22px;height:22px;border-radius:0;background:var(--soft);border:0;vertical-align:middle;text-align:center;line-height:22px;font-weight:700;font-size:16px}
+.box.ok{background:#a9dfbf;color:#17653a}.box.bad{background:#f5b7b1;color:#a32a22}
+.box.cur{background:#bcd0ec}
 .tag{font-weight:700;font-size:.95rem;color:var(--blue);margin:0 0 8px;border-top:3px solid var(--rule);padding-top:12px}
 .q{font:700 1.55rem/1.3 "Playfair Display",Georgia,serif;margin:0 0 16px}
 figure{margin:0 0 16px}
@@ -46,6 +46,7 @@ figcaption{font-size:.85rem;color:var(--mute);margin-top:6px}
 .fb{margin:16px 0 0;font-weight:700}.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
 .go{margin-top:16px;font:inherit;font-weight:700;padding:12px 22px;background:var(--blue);color:#fff;border:0;border-radius:2px;cursor:pointer}
 .go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.wa{display:inline-block;text-decoration:none;margin-left:10px;background:#1e8e4f;color:#fff}
 .score{font:900 3.4rem/1 "Playfair Display",Georgia,serif;margin:4px 0 6px}
 pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space:pre-wrap;margin:14px 0}
 .foot{color:var(--mute);font-size:.9rem;margin-top:14px}
@@ -60,48 +61,462 @@ pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space
 </main>
 <script>
 var STARTS=[
-{q:"Name the artist who painted ‘The Starry Night’ (1889).",a:"Vincent van Gogh",w:["Paul Cézanne","Paul Gauguin","Georges Seurat"],img:"",cap:"The Starry Night, 1889"},
-{q:"Name the Dutch artist who painted ‘Girl with a Pearl Earring’ (c.1665).",a:"Johannes Vermeer",w:["Frans Hals","Jan Steen","Pieter de Hooch"],img:"",cap:"Girl with a Pearl Earring, c.1665"},
-{q:"Name the Dutch artist who painted ‘The Night Watch’ (1642).",a:"Rembrandt van Rijn",w:["Peter Paul Rubens","Anthony van Dyck","Johannes Vermeer"],img:"",cap:"The Night Watch, 1642"},
-{q:"Name the artist who painted ‘The Persistence of Memory’ (1931), with its melting clocks.",a:"Salvador Dalí",w:["René Magritte","Max Ernst","Joan Miró"],img:"",cap:"The Persistence of Memory, 1931"},
-{q:"Name the artist who painted the ‘Water Lilies’ series at Giverny.",a:"Claude Monet",w:["Édouard Manet","Alfred Sisley","Pierre-Auguste Renoir"],img:"",cap:"Water Lilies, c.1914–26"},
-{q:"Name the Italian artist who painted ‘The Birth of Venus’ (c.1485).",a:"Sandro Botticelli",w:["Raphael","Titian","Leonardo da Vinci"],img:"",cap:"The Birth of Venus, c.1485"},
-{q:"Name the artist who painted the ‘Mona Lisa’.",a:"Leonardo da Vinci",w:["Raphael","Michelangelo","Sandro Botticelli"],img:"",cap:"Mona Lisa, c.1503–19"},
-{q:"Name the Austrian artist who painted ‘The Kiss’ (1907–08).",a:"Gustav Klimt",w:["Egon Schiele","Edvard Munch","Henri Matisse"],img:"",cap:"The Kiss, 1907–08"},
-{q:"Name the Spanish court painter who painted ‘Las Meninas’ (1656).",a:"Diego Velázquez",w:["Francisco Goya","El Greco","Bartolomé Murillo"],img:"",cap:"Las Meninas, 1656"},
-{q:"Name the Norwegian artist who painted ‘The Scream’ (1893).",a:"Edvard Munch",w:["Gustav Klimt","Wassily Kandinsky","Ernst Ludwig Kirchner"],img:"",cap:"The Scream, 1893"},
-{q:"Name the American artist who painted ‘American Gothic’ (1930).",a:"Grant Wood",w:["Edward Hopper","Norman Rockwell","Andrew Wyeth"],img:"",cap:"American Gothic, 1930"},
-{q:"Name the English artist who painted ‘The Hay Wain’ (1821).",a:"John Constable",w:["J. M. W. Turner","Thomas Gainsborough","William Hogarth"],img:"",cap:"The Hay Wain, 1821"}
+{
+"q": "Name the artist who painted ‘The Arnolfini Portrait’ (1434).",
+"a": "Jan van Eyck",
+"w": [
+"Rogier van der Weyden",
+"Hans Memling",
+"Hieronymus Bosch"
+],
+"img": "",
+"cap": "The Arnolfini Portrait, 1434"
+},
+{
+"q": "Name the artist who painted ‘The Garden of Earthly Delights’.",
+"a": "Hieronymus Bosch",
+"w": [
+"Pieter Bruegel the Elder",
+"Jan van Eyck",
+"Albrecht Dürer"
+],
+"img": "",
+"cap": "The Garden of Earthly Delights, c.1490–1510"
+},
+{
+"q": "Name the artist who painted ‘The Ambassadors’ (1533), with its anamorphic skull.",
+"a": "Hans Holbein the Younger",
+"w": [
+"Albrecht Dürer",
+"Lucas Cranach the Elder",
+"Hans Memling"
+],
+"img": "",
+"cap": "The Ambassadors, 1533"
+},
+{
+"q": "Name the artist who painted ‘Las Meninas’ (1656).",
+"a": "Diego Velázquez",
+"w": [
+"Bartolomé Murillo",
+"Francisco de Zurbarán",
+"José de Ribera"
+],
+"img": "",
+"cap": "Las Meninas, 1656"
+},
+{
+"q": "Name the artist who painted ‘The Raft of the Medusa’ (1818–19).",
+"a": "Théodore Géricault",
+"w": [
+"Eugène Delacroix",
+"Jacques-Louis David",
+"Jean-Auguste-Dominique Ingres"
+],
+"img": "",
+"cap": "The Raft of the Medusa, 1818–19"
+},
+{
+"q": "Name the artist who painted ‘Liberty Leading the People’ (1830).",
+"a": "Eugène Delacroix",
+"w": [
+"Théodore Géricault",
+"Jean-Auguste-Dominique Ingres",
+"Gustave Courbet"
+],
+"img": "",
+"cap": "Liberty Leading the People, 1830"
+},
+{
+"q": "Name the artist who painted ‘Rain, Steam and Speed’ (1844).",
+"a": "J. M. W. Turner",
+"w": [
+"John Constable",
+"John Martin",
+"Samuel Palmer"
+],
+"img": "",
+"cap": "Rain, Steam and Speed, 1844"
+},
+{
+"q": "Name the artist who painted ‘A Bar at the Folies-Bergère’ (1882).",
+"a": "Édouard Manet",
+"w": [
+"Edgar Degas",
+"Pierre-Auguste Renoir",
+"Gustave Caillebotte"
+],
+"img": "",
+"cap": "A Bar at the Folies-Bergère, 1882"
+},
+{
+"q": "Name the artist who painted ‘A Sunday Afternoon on the Island of La Grande Jatte’.",
+"a": "Georges Seurat",
+"w": [
+"Paul Signac",
+"Camille Pissarro",
+"Paul Cézanne"
+],
+"img": "",
+"cap": "A Sunday Afternoon on the Island of La Grande Jatte, 1884–86"
+},
+{
+"q": "Name the artist who painted ‘Nighthawks’ (1942).",
+"a": "Edward Hopper",
+"w": [
+"Thomas Hart Benton",
+"Grant Wood",
+"Andrew Wyeth"
+],
+"img": "",
+"cap": "Nighthawks, 1942"
+},
+{
+"q": "Name the artist who painted ‘A Grotesque Old Woman’, also known as ‘The Ugly Duchess’ (c.1513).",
+"a": "Quinten Massys",
+"w": [
+"Jan Gossaert",
+"Joachim Patinir",
+"Lucas van Leyden"
+],
+"img": "",
+"cap": "A Grotesque Old Woman, c.1513"
+},
+{
+"q": "Name the artist who painted ‘Saturn Devouring His Son’.",
+"a": "Francisco Goya",
+"w": [
+"Diego Velázquez",
+"El Greco",
+"Francisco de Zurbarán"
+],
+"img": "",
+"cap": "Saturn Devouring His Son, c.1819–23"
+},
+{
+"q": "Name the artist who painted ‘The Anatomy Lesson of Dr Nicolaes Tulp’ (1632).",
+"a": "Rembrandt van Rijn",
+"w": [
+"Frans Hals",
+"Gerrit Dou",
+"Jan Steen"
+],
+"img": "",
+"cap": "The Anatomy Lesson of Dr Nicolaes Tulp, 1632"
+},
+{
+"q": "Name the artist who painted ‘The Laughing Cavalier’ (1624).",
+"a": "Frans Hals",
+"w": [
+"Rembrandt van Rijn",
+"Johannes Vermeer",
+"Anthony van Dyck"
+],
+"img": "",
+"cap": "The Laughing Cavalier, 1624"
+},
+{
+"q": "Name the artist who painted ‘The Lady of Shalott’ (1888).",
+"a": "John William Waterhouse",
+"w": [
+"Dante Gabriel Rossetti",
+"John Everett Millais",
+"Edward Burne-Jones"
+],
+"img": "",
+"cap": "The Lady of Shalott, 1888"
+},
+{
+"q": "Name the artist who painted ‘Ophelia’ (1851–52).",
+"a": "John Everett Millais",
+"w": [
+"John William Waterhouse",
+"Dante Gabriel Rossetti",
+"William Holman Hunt"
+],
+"img": "",
+"cap": "Ophelia, 1851–52"
+},
+{
+"q": "Name the artist who made ‘The Great Wave off Kanagawa’.",
+"a": "Hokusai",
+"w": [
+"Hiroshige",
+"Utamaro",
+"Kuniyoshi"
+],
+"img": "",
+"cap": "The Great Wave off Kanagawa, c.1831"
+},
+{
+"q": "Name the artist who painted ‘Les Demoiselles d’Avignon’ (1907).",
+"a": "Pablo Picasso",
+"w": [
+"Georges Braque",
+"Henri Matisse",
+"André Derain"
+],
+"img": "",
+"cap": "Les Demoiselles d’Avignon, 1907"
+}
 ];
 var TOPICS=[
-{t:"The periodic table",b:[
-{q:"The symbol Au stands for which element?",a:"Gold",w:["Silver","Copper","Platinum"]},
-{q:"Which is the lightest of the noble gases?",a:"Helium",w:["Neon","Argon","Krypton"]},
-{q:"Which element has atomic number 6?",a:"Carbon",w:["Nitrogen","Boron","Oxygen"]}]},
-{t:"Victorian novelists",b:[
-{q:"Who wrote ‘Great Expectations’?",a:"Charles Dickens",w:["William Thackeray","Anthony Trollope","Wilkie Collins"]},
-{q:"Which Brontë sister wrote ‘Jane Eyre’?",a:"Charlotte",w:["Emily","Anne","Maria"]},
-{q:"Who wrote ‘Tess of the d’Urbervilles’?",a:"Thomas Hardy",w:["George Meredith","Anthony Trollope","D. H. Lawrence"]}]},
-{t:"Roman Britain",b:[
-{q:"Which Roman emperor began a wall across northern Britain in AD 122?",a:"Hadrian",w:["Trajan","Claudius","Antoninus Pius"]},
-{q:"Which queen of the Iceni led a revolt against Roman rule?",a:"Boudicca",w:["Cartimandua","Cleopatra","Zenobia"]},
-{q:"By what Latin name did the Romans know the city of Bath?",a:"Aquae Sulis",w:["Eboracum","Londinium","Deva Victrix"]}]},
-{t:"Composers",b:[
-{q:"Who composed the opera ‘The Magic Flute’?",a:"Wolfgang Amadeus Mozart",w:["Joseph Haydn","Gioachino Rossini","Giuseppe Verdi"]},
-{q:"Which composer wrote the ‘Moonlight’ Sonata?",a:"Ludwig van Beethoven",w:["Franz Schubert","Johannes Brahms","Frédéric Chopin"]},
-{q:"Which Russian composer wrote ‘The Rite of Spring’?",a:"Igor Stravinsky",w:["Pyotr Tchaikovsky","Sergei Prokofiev","Sergei Rachmaninoff"]}]},
-{t:"Rivers",b:[
-{q:"Which river flows through Vienna?",a:"The Danube",w:["The Rhine","The Elbe","The Vistula"]},
-{q:"What is the longest river in Africa?",a:"The Nile",w:["The Congo","The Niger","The Zambezi"]},
-{q:"Which river flows through Baghdad?",a:"The Tigris",w:["The Euphrates","The Jordan","The Seine"]}]},
-{t:"Scientists",b:[
-{q:"Who formulated the laws of motion and universal gravitation?",a:"Isaac Newton",w:["Galileo Galilei","Robert Hooke","Robert Boyle"]},
-{q:"Who proposed the theory of evolution by natural selection?",a:"Charles Darwin",w:["Jean-Baptiste Lamarck","Thomas Huxley","Gregor Mendel"]},
-{q:"Which Polish-born scientist won Nobel Prizes in both Physics and Chemistry?",a:"Marie Curie",w:["Lise Meitner","Rosalind Franklin","Dorothy Hodgkin"]}]},
-{t:"British prime ministers",b:[
-{q:"Who became Prime Minister in May 1940?",a:"Winston Churchill",w:["Neville Chamberlain","Clement Attlee","Stanley Baldwin"]},
-{q:"Who was Britain’s first woman Prime Minister?",a:"Margaret Thatcher",w:["Theresa May","Liz Truss","Barbara Castle"]},
-{q:"Who is generally regarded as Britain’s first Prime Minister?",a:"Robert Walpole",w:["William Pitt the Elder","Duke of Wellington","Robert Peel"]}]}
+{
+"t": "Chemistry",
+"b": [
+{
+"q": "Which element has the highest electronegativity?",
+"a": "Fluorine",
+"w": [
+"Oxygen",
+"Chlorine",
+"Nitrogen"
+]
+},
+{
+"q": "Which element has the chemical symbol W?",
+"a": "Tungsten",
+"w": [
+"Tantalum",
+"Vanadium",
+"Rhenium"
+]
+},
+{
+"q": "Which element has atomic number 92?",
+"a": "Uranium",
+"w": [
+"Thorium",
+"Plutonium",
+"Radium"
+]
+}
+]
+},
+{
+"t": "Nineteenth-century novels",
+"b": [
+{
+"q": "Who wrote ‘The Mill on the Floss’?",
+"a": "George Eliot",
+"w": [
+"Elizabeth Gaskell",
+"Thomas Hardy",
+"Wilkie Collins"
+]
+},
+{
+"q": "Who wrote ‘The Woman in White’?",
+"a": "Wilkie Collins",
+"w": [
+"Charles Dickens",
+"Sheridan Le Fanu",
+"Anthony Trollope"
+]
+},
+{
+"q": "In which Thomas Hardy novel does the shepherd Gabriel Oak appear?",
+"a": "Far from the Madding Crowd",
+"w": [
+"The Woodlanders",
+"Jude the Obscure",
+"The Return of the Native"
+]
+}
+]
+},
+{
+"t": "Roman Britain",
+"b": [
+{
+"q": "Which governor won the battle of Mons Graupius in northern Scotland?",
+"a": "Agricola",
+"w": [
+"Suetonius Paulinus",
+"Quintus Petillius Cerialis",
+"Aulus Plautius"
+]
+},
+{
+"q": "Which emperor died at Eboracum (York) in AD 211?",
+"a": "Septimius Severus",
+"w": [
+"Hadrian",
+"Constantine",
+"Caracalla"
+]
+},
+{
+"q": "The Antonine Wall ran between which two Scottish firths?",
+"a": "Forth and Clyde",
+"w": [
+"Tay and Clyde",
+"Forth and Solway",
+"Moray and Clyde"
+]
+}
+]
+},
+{
+"t": "Composers",
+"b": [
+{
+"q": "Which composer wrote the opera ‘Peter Grimes’?",
+"a": "Benjamin Britten",
+"w": [
+"Ralph Vaughan Williams",
+"Gustav Holst",
+"Michael Tippett"
+]
+},
+{
+"q": "Which composer wrote ‘The Lark Ascending’?",
+"a": "Ralph Vaughan Williams",
+"w": [
+"Edward Elgar",
+"Gustav Holst",
+"Frederick Delius"
+]
+},
+{
+"q": "Which Czech composer wrote the cycle ‘Má vlast’?",
+"a": "Bedřich Smetana",
+"w": [
+"Antonín Dvořák",
+"Leoš Janáček",
+"Bohuslav Martinů"
+]
+}
+]
+},
+{
+"t": "Rivers",
+"b": [
+{
+"q": "Which is the longest river in Europe?",
+"a": "The Volga",
+"w": [
+"The Danube",
+"The Dnieper",
+"The Don"
+]
+},
+{
+"q": "Which river meets the Saône at Lyon?",
+"a": "The Rhône",
+"w": [
+"The Loire",
+"The Garonne",
+"The Seine"
+]
+},
+{
+"q": "Near which river does the city of Timbuktu lie?",
+"a": "The Niger",
+"w": [
+"The Senegal",
+"The Congo",
+"The Zambezi"
+]
+}
+]
+},
+{
+"t": "Scientists",
+"b": [
+{
+"q": "Who discovered the electron in 1897?",
+"a": "J. J. Thomson",
+"w": [
+"Ernest Rutherford",
+"James Chadwick",
+"Niels Bohr"
+]
+},
+{
+"q": "Who formulated the three laws of planetary motion?",
+"a": "Johannes Kepler",
+"w": [
+"Tycho Brahe",
+"Nicolaus Copernicus",
+"Galileo Galilei"
+]
+},
+{
+"q": "Who discovered penicillin in 1928?",
+"a": "Alexander Fleming",
+"w": [
+"Howard Florey",
+"Ernst Chain",
+"Joseph Lister"
+]
+}
+]
+},
+{
+"t": "British prime ministers",
+"b": [
+{
+"q": "Who was Prime Minister during the Suez Crisis of 1956?",
+"a": "Anthony Eden",
+"w": [
+"Harold Macmillan",
+"Clement Attlee",
+"Winston Churchill"
+]
+},
+{
+"q": "Which Prime Minister was assassinated in the House of Commons lobby in 1812?",
+"a": "Spencer Perceval",
+"w": [
+"Lord Liverpool",
+"George Canning",
+"Lord North"
+]
+},
+{
+"q": "Who was Prime Minister when the Great Reform Act passed in 1832?",
+"a": "Earl Grey",
+"w": [
+"Duke of Wellington",
+"Lord Melbourne",
+"Robert Peel"
+]
+}
+]
+},
+{
+"t": "Shakespeare",
+"b": [
+{
+"q": "In which play does the rogue Autolycus appear?",
+"a": "The Winter’s Tale",
+"w": [
+"Cymbeline",
+"Pericles",
+"The Tempest"
+]
+},
+{
+"q": "Which comedy is set in Illyria?",
+"a": "Twelfth Night",
+"w": [
+"As You Like It",
+"Much Ado About Nothing",
+"The Comedy of Errors"
+]
+},
+{
+"q": "Which play is generally considered Shakespeare’s shortest?",
+"a": "The Comedy of Errors",
+"w": [
+"Macbeth",
+"The Tempest",
+"A Midsummer Night’s Dream"
+]
+}
+]
+}
 ];
 function rng(n){return function(){n|=0;n=n+0x6D2B79F5|0;var t=Math.imul(n^n>>>15,1|n);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuf(a,rf){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rf()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
@@ -110,15 +525,15 @@ var dayN=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864
 var sp=shuf(STARTS.map(function(_,i){return i}),rng(dayN*7919+13)).slice(0,3),tp=shuf(TOPICS.map(function(_,i){return i}),rng(dayN*104729+7)).slice(0,3);
 var today=sp.map(function(si,k){return {s:STARTS[si],t:TOPICS[tp[k]].t,b:TOPICS[tp[k]].b}});
 var st={r:0,step:0,score:0,log:[[null,null,null,null],[null,null,null,null],[null,null,null,null]],phase:"ask",done:false,last:null,started:false,t0:0,t1:0};
-try{var sv=localStorage.getItem("ucs2:"+KEY);if(sv){st=JSON.parse(sv)}}catch(e){}
-function save(){try{localStorage.setItem("ucs2:"+KEY,JSON.stringify(st))}catch(e){}}
+try{var sv=localStorage.getItem("ucs3:"+KEY);if(sv){st=JSON.parse(sv)}}catch(e){}
+function save(){try{localStorage.setItem("ucs3:"+KEY,JSON.stringify(st))}catch(e){}}
 function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e}
 function cur(){var s=today[st.r];return st.step===0?s.s:s.b[st.step-1]}
 function board(){var t=document.getElementById("board");t.innerHTML="";
 var h=el("thead");var hr=el("tr");["Round","Starter","Bonus 1","Bonus 2","Bonus 3"].forEach(function(x){hr.appendChild(el("th","",x))});h.appendChild(hr);t.appendChild(h);
 var b=el("tbody");today.forEach(function(set,i){var L=st.log[i],tr=el("tr");tr.appendChild(el("td","",(i+1)+(L[0]===1||(st.r===i&&st.step>0)?". "+set.t:".")));
 for(var k=0;k<4;k++){var td=el("td"),bx=el("span","box"+(L[k]===1?" ok":L[k]===0?" bad":"")+(st.r===i&&st.step===k&&!st.done?" cur":""));
-if(k>0&&L[0]===0)bx.style.opacity=".35";td.appendChild(bx);tr.appendChild(td)}b.appendChild(tr)});t.appendChild(b)}
+bx.textContent=L[k]===1?"✓":L[k]===0?"✗":"";if(k>0&&L[0]===0)bx.style.opacity=".35";td.appendChild(bx);tr.appendChild(td)}b.appendChild(tr)});t.appendChild(b)}
 function render(){var S=document.getElementById("stage"),bd=document.getElementById("board");S.innerHTML="";bd.hidden=!st.started;
 if(!st.started){return intro(S)}
 board();
@@ -133,23 +548,25 @@ if(fb){b.disabled=true;if(o===q.a)b.className+=" ok";else if(o===st.last.pick)b.
 else b.onclick=function(){answer(o)};box.appendChild(b)});S.appendChild(box);
 if(fb){var ok=st.last.ok;
 S.appendChild(el("p","fb "+(ok?"ok":"bad"),ok?(st.step===0?"Correct. Ten points, and three bonus questions on "+set.t+".":"Correct. Five points."):"Not this time. The answer was "+q.a+"."+(st.step===0?" No bonus questions this round.":"")));
-var nb=el("button","go",lastStep()?"See your score":(st.step===0&&ok)?"Start the bonuses":"Next question");nb.onclick=advance;S.appendChild(nb);nb.focus()}}
+clearTimeout(adv);adv=setTimeout(advance,ok?(st.step===0?2000:1200):2400)}}
 var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 function intro(S){S.appendChild(el("p","kick",now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})));
 S.appendChild(el("h2","","The "+DAYS[now.getDay()]+" Challenge, No. "+Math.max(1,dayN-20781)));
 S.appendChild(el("p","stand","Three starter questions, ten points each. All three are on one subject: today, name the artist. Answer a starter correctly to win three bonus questions on a set topic, five points each. Twelve questions and 75 points in all. The clock starts when you begin."));
 var b=el("button","go","Begin");b.onclick=function(){st.started=true;st.t0=Date.now();save();render()};S.appendChild(b);b.focus()}
+var adv=0,SITE="https://starter-for-ten.vercel.app";
 function lastStep(){return st.r===2&&(st.step===3||(st.step===0&&!st.last.ok))}
 function answer(o){var q=cur(),ok=o===q.a;st.log[st.r][st.step]=ok?1:0;if(ok)st.score+=st.step===0?10:5;st.last={ok:ok,pick:o};st.phase="fb";save();render()}
-function advance(){var ok=st.last.ok;
+function advance(){clearTimeout(adv);if(st.phase!=="fb")return;var ok=st.last.ok;
 if(st.step===0&&ok){st.step=1}else if(st.step>0&&st.step<3){st.step++}else{if(st.r===2){st.done=true;st.t1=Date.now()}else{st.r++;st.step=0}}
 st.phase="ask";save();render()}
 function finish(S){var t=st.score>=60?"Professor":st.score>=40?"Fellow":st.score>=20?"Graduate":"Fresher";
 var secs=Math.max(0,Math.round(((st.t1||Date.now())-st.t0)/1000)),tm=Math.floor(secs/60)+":"+String(secs%60).padStart(2,"0");S.appendChild(el("p","tag","Final score. Your rank: "+t));S.appendChild(el("div","score",st.score+" / 75"));S.appendChild(el("p","foot","Time taken: "+tm));
 var lines=st.log.map(function(L,i){var b="";if(L[0]===1)for(var k=1;k<=3;k++)b+=L[k]===1?"🔵":"⚫";else b="🚫";return "Round "+(i+1)+"  "+(L[0]===1?"🟩":"🟥")+"  "+b});
-var txt="Starter for Ten "+KEY+"\n"+lines.join("\n")+"\nScore: "+st.score+"/75\nTime: "+tm;
+var txt="Starter for Ten "+KEY+"\n"+lines.join("\n")+"\nScore: "+st.score+"/75\nTime: "+tm+"\n"+SITE;
 S.appendChild(el("pre","",txt));
 var b=el("button","go","Copy result");b.onclick=function(){try{navigator.clipboard.writeText(txt).then(function(){b.textContent="Copied"},function(){b.textContent="Select the text above to copy"})}catch(e){b.textContent="Select the text above to copy"}};S.appendChild(b);
+if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent))){var w=el("a","go wa","Share on WhatsApp");w.href="https://wa.me/?text="+encodeURIComponent(txt);w.target="_blank";w.rel="noopener";S.appendChild(w)}
 var m=el("p","foot","");S.appendChild(m);
 function tick(){var n=new Date(),nx=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.floor((nx-n)/1000);m.textContent="Next challenge in "+Math.floor(s/3600)+"h "+String(Math.floor(s%3600/60)).padStart(2,"0")+"m."}
 tick();setInterval(tick,30000)}
