@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Starter for Ten</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#fbfaf7;--ink:#000;--mute:#4a4a4a;--line:#d9d9d9;--rule:#1a1a1a;--blue:#0b5cad;--red:#c8102e;--ok:#0f7b3f;--okbg:#e6f4ec;--bad:#b3261e;--badbg:#fbe9e7;--soft:#f4f4f2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100%}
+.top{border-bottom:1px solid var(--line);font-size:.85rem;color:var(--mute)}
+.top div{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;justify-content:space-between;gap:12px}
+.mast{text-align:center;padding:18px 16px 12px;border-bottom:3px solid var(--rule)}
+.mast h1{margin:0;font:900 clamp(2.2rem,8vw,3.4rem)/1 "Playfair Display",Georgia,serif}
+.nav{border-bottom:1px solid var(--line)}
+.nav div{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;gap:20px;font-weight:600;font-size:.95rem}
+.nav .on{color:var(--blue);border-bottom:3px solid var(--blue);margin-bottom:-11px;padding-bottom:8px}
+main{max-width:760px;margin:0 auto;padding:22px 16px 56px}
+.kick{color:var(--red);font-weight:700;font-size:.95rem;margin:0 0 6px}
+h2{font:900 clamp(1.9rem,6vw,2.6rem)/1.1 "Playfair Display",Georgia,serif;margin:0 0 10px}
+.stand{font:1.15rem/1.45 Georgia,serif;color:var(--mute);margin:0 0 20px}
+table.board{width:100%;border-collapse:collapse;margin-bottom:24px;font-size:.95rem}
+.board th,.board td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
+.board th:first-child,.board td:first-child{text-align:left;font-weight:600}
+.board thead th{border-bottom:2px solid var(--rule);font-weight:700}
+.box{display:inline-block;width:22px;height:22px;border-radius:3px;background:var(--soft);border:1px solid var(--line);vertical-align:middle}
+.box.ok{background:var(--ok);border-color:var(--ok)}.box.bad{background:var(--bad);border-color:var(--bad)}
+.box.cur{border:2px solid var(--blue)}
+.tag{font-weight:700;font-size:.95rem;color:var(--blue);margin:0 0 8px;border-top:3px solid var(--rule);padding-top:12px}
+.q{font:700 1.55rem/1.3 "Playfair Display",Georgia,serif;margin:0 0 16px}
+figure{margin:0 0 16px}
+figure img{display:block;max-width:100%;max-height:340px;margin:0 auto;border:1px solid var(--line)}
+figcaption{font-size:.85rem;color:var(--mute);margin-top:6px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;font:inherit;font-weight:600;padding:13px 14px;border:1.5px solid var(--ink);border-radius:2px;background:var(--bg);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){background:var(--soft);border-color:var(--blue)}
+.opt:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.opt i{font-style:normal;flex:none;width:28px;height:28px;border:1.5px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:.85rem}
+.opt:disabled{cursor:default;opacity:1}
+.opt.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
+.opt.dim{border-color:var(--line);color:var(--mute)}
+.fb{margin:16px 0 0;font-weight:700}.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+.go{margin-top:16px;font:inherit;font-weight:700;padding:12px 22px;background:var(--blue);color:#fff;border:0;border-radius:2px;cursor:pointer}
+.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.score{font:900 3.4rem/1 "Playfair Display",Georgia,serif;margin:4px 0 6px}
+pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space:pre-wrap;margin:14px 0}
+.foot{color:var(--mute);font-size:.9rem;margin-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="mast"><h1>Starter for Ten</h1></header>
+<main>
+<table class="board" id="board" hidden></table>
+<div id="stage"></div>
+</main>
+<script>
+var STARTS=[
+{q:"Name the artist who painted ‘The Starry Night’ (1889).",a:"Vincent van Gogh",w:["Paul Cézanne","Paul Gauguin","Georges Seurat"],img:"",cap:"The Starry Night, 1889"},
+{q:"Name the Dutch artist who painted ‘Girl with a Pearl Earring’ (c.1665).",a:"Johannes Vermeer",w:["Frans Hals","Jan Steen","Pieter de Hooch"],img:"",cap:"Girl with a Pearl Earring, c.1665"},
+{q:"Name the Dutch artist who painted ‘The Night Watch’ (1642).",a:"Rembrandt van Rijn",w:["Peter Paul Rubens","Anthony van Dyck","Johannes Vermeer"],img:"",cap:"The Night Watch, 1642"},
+{q:"Name the artist who painted ‘The Persistence of Memory’ (1931), with its melting clocks.",a:"Salvador Dalí",w:["René Magritte","Max Ernst","Joan Miró"],img:"",cap:"The Persistence of Memory, 1931"},
+{q:"Name the artist who painted the ‘Water Lilies’ series at Giverny.",a:"Claude Monet",w:["Édouard Manet","Alfred Sisley","Pierre-Auguste Renoir"],img:"",cap:"Water Lilies, c.1914–26"},
+{q:"Name the Italian artist who painted ‘The Birth of Venus’ (c.1485).",a:"Sandro Botticelli",w:["Raphael","Titian","Leonardo da Vinci"],img:"",cap:"The Birth of Venus, c.1485"},
+{q:"Name the artist who painted the ‘Mona Lisa’.",a:"Leonardo da Vinci",w:["Raphael","Michelangelo","Sandro Botticelli"],img:"",cap:"Mona Lisa, c.1503–19"},
+{q:"Name the Austrian artist who painted ‘The Kiss’ (1907–08).",a:"Gustav Klimt",w:["Egon Schiele","Edvard Munch","Henri Matisse"],img:"",cap:"The Kiss, 1907–08"},
+{q:"Name the Spanish court painter who painted ‘Las Meninas’ (1656).",a:"Diego Velázquez",w:["Francisco Goya","El Greco","Bartolomé Murillo"],img:"",cap:"Las Meninas, 1656"},
+{q:"Name the Norwegian artist who painted ‘The Scream’ (1893).",a:"Edvard Munch",w:["Gustav Klimt","Wassily Kandinsky","Ernst Ludwig Kirchner"],img:"",cap:"The Scream, 1893"},
+{q:"Name the American artist who painted ‘American Gothic’ (1930).",a:"Grant Wood",w:["Edward Hopper","Norman Rockwell","Andrew Wyeth"],img:"",cap:"American Gothic, 1930"},
+{q:"Name the English artist who painted ‘The Hay Wain’ (1821).",a:"John Constable",w:["J. M. W. Turner","Thomas Gainsborough","William Hogarth"],img:"",cap:"The Hay Wain, 1821"}
+];
+var TOPICS=[
+{t:"The periodic table",b:[
+{q:"The symbol Au stands for which element?",a:"Gold",w:["Silver","Copper","Platinum"]},
+{q:"Which is the lightest of the noble gases?",a:"Helium",w:["Neon","Argon","Krypton"]},
+{q:"Which element has atomic number 6?",a:"Carbon",w:["Nitrogen","Boron","Oxygen"]}]},
+{t:"Victorian novelists",b:[
+{q:"Who wrote ‘Great Expectations’?",a:"Charles Dickens",w:["William Thackeray","Anthony Trollope","Wilkie Collins"]},
+{q:"Which Brontë sister wrote ‘Jane Eyre’?",a:"Charlotte",w:["Emily","Anne","Maria"]},
+{q:"Who wrote ‘Tess of the d’Urbervilles’?",a:"Thomas Hardy",w:["George Meredith","Anthony Trollope","D. H. Lawrence"]}]},
+{t:"Roman Britain",b:[
+{q:"Which Roman emperor began a wall across northern Britain in AD 122?",a:"Hadrian",w:["Trajan","Claudius","Antoninus Pius"]},
+{q:"Which queen of the Iceni led a revolt against Roman rule?",a:"Boudicca",w:["Cartimandua","Cleopatra","Zenobia"]},
+{q:"By what Latin name did the Romans know the city of Bath?",a:"Aquae Sulis",w:["Eboracum","Londinium","Deva Victrix"]}]},
+{t:"Composers",b:[
+{q:"Who composed the opera ‘The Magic Flute’?",a:"Wolfgang Amadeus Mozart",w:["Joseph Haydn","Gioachino Rossini","Giuseppe Verdi"]},
+{q:"Which composer wrote the ‘Moonlight’ Sonata?",a:"Ludwig van Beethoven",w:["Franz Schubert","Johannes Brahms","Frédéric Chopin"]},
+{q:"Which Russian composer wrote ‘The Rite of Spring’?",a:"Igor Stravinsky",w:["Pyotr Tchaikovsky","Sergei Prokofiev","Sergei Rachmaninoff"]}]},
+{t:"Rivers",b:[
+{q:"Which river flows through Vienna?",a:"The Danube",w:["The Rhine","The Elbe","The Vistula"]},
+{q:"What is the longest river in Africa?",a:"The Nile",w:["The Congo","The Niger","The Zambezi"]},
+{q:"Which river flows through Baghdad?",a:"The Tigris",w:["The Euphrates","The Jordan","The Seine"]}]},
+{t:"Scientists",b:[
+{q:"Who formulated the laws of motion and universal gravitation?",a:"Isaac Newton",w:["Galileo Galilei","Robert Hooke","Robert Boyle"]},
+{q:"Who proposed the theory of evolution by natural selection?",a:"Charles Darwin",w:["Jean-Baptiste Lamarck","Thomas Huxley","Gregor Mendel"]},
+{q:"Which Polish-born scientist won Nobel Prizes in both Physics and Chemistry?",a:"Marie Curie",w:["Lise Meitner","Rosalind Franklin","Dorothy Hodgkin"]}]},
+{t:"British prime ministers",b:[
+{q:"Who became Prime Minister in May 1940?",a:"Winston Churchill",w:["Neville Chamberlain","Clement Attlee","Stanley Baldwin"]},
+{q:"Who was Britain’s first woman Prime Minister?",a:"Margaret Thatcher",w:["Theresa May","Liz Truss","Barbara Castle"]},
+{q:"Who is generally regarded as Britain’s first Prime Minister?",a:"Robert Walpole",w:["William Pitt the Elder","Duke of Wellington","Robert Peel"]}]}
+];
+function rng(n){return function(){n|=0;n=n+0x6D2B79F5|0;var t=Math.imul(n^n>>>15,1|n);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuf(a,rf){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rf()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
+var now=new Date(),KEY=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+var dayN=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864e5);
+var sp=shuf(STARTS.map(function(_,i){return i}),rng(dayN*7919+13)).slice(0,3),tp=shuf(TOPICS.map(function(_,i){return i}),rng(dayN*104729+7)).slice(0,3);
+var today=sp.map(function(si,k){return {s:STARTS[si],t:TOPICS[tp[k]].t,b:TOPICS[tp[k]].b}});
+var st={r:0,step:0,score:0,log:[[null,null,null,null],[null,null,null,null],[null,null,null,null]],phase:"ask",done:false,last:null,started:false,t0:0,t1:0};
+try{var sv=localStorage.getItem("ucs2:"+KEY);if(sv){st=JSON.parse(sv)}}catch(e){}
+function save(){try{localStorage.setItem("ucs2:"+KEY,JSON.stringify(st))}catch(e){}}
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e}
+function cur(){var s=today[st.r];return st.step===0?s.s:s.b[st.step-1]}
+function board(){var t=document.getElementById("board");t.innerHTML="";
+var h=el("thead");var hr=el("tr");["Round","Starter","Bonus 1","Bonus 2","Bonus 3"].forEach(function(x){hr.appendChild(el("th","",x))});h.appendChild(hr);t.appendChild(h);
+var b=el("tbody");today.forEach(function(set,i){var L=st.log[i],tr=el("tr");tr.appendChild(el("td","",(i+1)+(L[0]===1||(st.r===i&&st.step>0)?". "+set.t:".")));
+for(var k=0;k<4;k++){var td=el("td"),bx=el("span","box"+(L[k]===1?" ok":L[k]===0?" bad":"")+(st.r===i&&st.step===k&&!st.done?" cur":""));
+if(k>0&&L[0]===0)bx.style.opacity=".35";td.appendChild(bx);tr.appendChild(td)}b.appendChild(tr)});t.appendChild(b)}
+function render(){var S=document.getElementById("stage"),bd=document.getElementById("board");S.innerHTML="";bd.hidden=!st.started;
+if(!st.started){return intro(S)}
+board();
+if(st.done){return finish(S)}
+var set=today[st.r],q=cur();
+S.appendChild(el("p","tag",st.step===0?"Starter for ten. Name the artist. Round "+(st.r+1)+" of 3":"Bonus "+st.step+" of 3 on "+set.t+". Five points"));
+S.appendChild(el("p","q",q.q));
+if(q.img){var f=el("figure"),im=el("img");im.src=q.img;im.alt="The painting to identify";f.appendChild(im);if(q.cap)f.appendChild(el("figcaption","",q.cap));S.appendChild(f)}
+var opts=shuf([q.a].concat(q.w),rng(dayN*101+st.r*10+st.step+1)),box=el("div","opts"),fb=st.phase==="fb";
+opts.forEach(function(o,i){var b=el("button","opt");b.type="button";b.appendChild(el("i","","ABCD"[i]));b.appendChild(el("span","",o));
+if(fb){b.disabled=true;if(o===q.a)b.className+=" ok";else if(o===st.last.pick)b.className+=" bad";else b.className+=" dim"}
+else b.onclick=function(){answer(o)};box.appendChild(b)});S.appendChild(box);
+if(fb){var ok=st.last.ok;
+S.appendChild(el("p","fb "+(ok?"ok":"bad"),ok?(st.step===0?"Correct. Ten points, and three bonus questions on "+set.t+".":"Correct. Five points."):"Not this time. The answer was "+q.a+"."+(st.step===0?" No bonus questions this round.":"")));
+var nb=el("button","go",lastStep()?"See your score":(st.step===0&&ok)?"Start the bonuses":"Next question");nb.onclick=advance;S.appendChild(nb);nb.focus()}}
+var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function intro(S){S.appendChild(el("p","kick",now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})));
+S.appendChild(el("h2","","The "+DAYS[now.getDay()]+" Challenge, No. "+Math.max(1,dayN-20781)));
+S.appendChild(el("p","stand","Three starter questions, ten points each. All three are on one subject: today, name the artist. Answer a starter correctly to win three bonus questions on a set topic, five points each. Twelve questions and 75 points in all. The clock starts when you begin."));
+var b=el("button","go","Begin");b.onclick=function(){st.started=true;st.t0=Date.now();save();render()};S.appendChild(b);b.focus()}
+function lastStep(){return st.r===2&&(st.step===3||(st.step===0&&!st.last.ok))}
+function answer(o){var q=cur(),ok=o===q.a;st.log[st.r][st.step]=ok?1:0;if(ok)st.score+=st.step===0?10:5;st.last={ok:ok,pick:o};st.phase="fb";save();render()}
+function advance(){var ok=st.last.ok;
+if(st.step===0&&ok){st.step=1}else if(st.step>0&&st.step<3){st.step++}else{if(st.r===2){st.done=true;st.t1=Date.now()}else{st.r++;st.step=0}}
+st.phase="ask";save();render()}
+function finish(S){var t=st.score>=60?"Professor":st.score>=40?"Fellow":st.score>=20?"Graduate":"Fresher";
+var secs=Math.max(0,Math.round(((st.t1||Date.now())-st.t0)/1000)),tm=Math.floor(secs/60)+":"+String(secs%60).padStart(2,"0");S.appendChild(el("p","tag","Final score. Your rank: "+t));S.appendChild(el("div","score",st.score+" / 75"));S.appendChild(el("p","foot","Time taken: "+tm));
+var lines=st.log.map(function(L,i){var b="";if(L[0]===1)for(var k=1;k<=3;k++)b+=L[k]===1?"🔵":"⚫";else b="🚫";return "Round "+(i+1)+"  "+(L[0]===1?"🟩":"🟥")+"  "+b});
+var txt="Starter for Ten "+KEY+"\n"+lines.join("\n")+"\nScore: "+st.score+"/75\nTime: "+tm;
+S.appendChild(el("pre","",txt));
+var b=el("button","go","Copy result");b.onclick=function(){try{navigator.clipboard.writeText(txt).then(function(){b.textContent="Copied"},function(){b.textContent="Select the text above to copy"})}catch(e){b.textContent="Select the text above to copy"}};S.appendChild(b);
+var m=el("p","foot","");S.appendChild(m);
+function tick(){var n=new Date(),nx=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.floor((nx-n)/1000);m.textContent="Next challenge in "+Math.floor(s/3600)+"h "+String(Math.floor(s%3600/60)).padStart(2,"0")+"m."}
+tick();setInterval(tick,30000)}
+render();
+</script>
+</body>
+</html>
