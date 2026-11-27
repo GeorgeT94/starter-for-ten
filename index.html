@@ -52,6 +52,7 @@ figcaption{font-size:.85rem;color:var(--mute);margin-top:6px}
 .lbf label{font-weight:700;font-size:.9rem;display:grid;gap:4px}
 .lbf input{font:inherit;padding:11px 12px;border:1.5px solid var(--ink);border-radius:0;background:#fff;color:var(--ink)}
 .lbf select{font:inherit;padding:11px 12px;border:1.5px solid var(--ink);border-radius:0;background:#fff;color:var(--ink);max-width:100%}
+.lbf input,.lbf select{width:100%}
 .lbf input:focus-visible,.lbf select:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
 .lbm{color:var(--bad);font-weight:600;min-height:1.4em;margin:0}
 .lbt{font-size:.9rem}
@@ -59,6 +60,22 @@ figcaption{font-size:.85rem;color:var(--mute);margin-top:6px}
 .lbt td:last-child{font-weight:700}
 .lbt tr.me td{background:var(--soft);font-weight:700}
 .alt{background:transparent;color:var(--ink);border:1.5px solid var(--ink);margin-left:10px}
+.nav a{color:var(--ink);text-decoration:none}
+.nav a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+a.go{display:inline-block;text-decoration:none}
+.arch{border-top:3px solid var(--rule)}
+.arow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 6px;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+.arow:hover{background:var(--soft)}
+.arow:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+.aleft{display:grid;gap:2px}
+.aleft span{color:var(--mute);font-size:.9rem}
+.ares{font-weight:700;color:var(--blue);white-space:nowrap}
+.cb{position:relative}
+.cbl{list-style:none;margin:0;padding:0;position:absolute;left:0;right:0;top:100%;z-index:5;max-height:240px;overflow-y:auto;background:#fff;border:1.5px solid var(--ink);border-top:0;font-weight:400}
+.cbl li{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--line)}
+.cbl li:last-child{border-bottom:0}
+.cbl li.act,.cbl li:hover{background:var(--soft)}
+.cbl li.none{color:var(--mute);cursor:default}
 .score{font:900 3.4rem/1 "Playfair Display",Georgia,serif;margin:4px 0 6px}
 pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space:pre-wrap;margin:14px 0}
 .foot{color:var(--mute);font-size:.9rem;margin-top:14px}
@@ -71,6 +88,7 @@ pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space
 </head>
 <body>
 <header class="mast"><h1>Starter for Ten</h1></header>
+<nav class="nav" aria-label="Main"><div id="navin"></div></nav>
 <main>
 <table class="board" id="board" hidden></table>
 <div id="stage"></div>
@@ -80,15 +98,17 @@ var DAYS=[{"d":"2026-11-26","sub":"Name the artist","s":[["Which artist painted 
 var UNI_GROUPS=[["Oxford colleges",["All Souls College, Oxford","Balliol College, Oxford","Brasenose College, Oxford","Christ Church, Oxford","Corpus Christi College, Oxford","Exeter College, Oxford","Green Templeton College, Oxford","Harris Manchester College, Oxford","Hertford College, Oxford","Jesus College, Oxford","Keble College, Oxford","Kellogg College, Oxford","Lady Margaret Hall, Oxford","Linacre College, Oxford","Lincoln College, Oxford","Magdalen College, Oxford","Mansfield College, Oxford","Merton College, Oxford","New College, Oxford","Nuffield College, Oxford","Oriel College, Oxford","Pembroke College, Oxford","The Queen’s College, Oxford","Reuben College, Oxford","St Anne’s College, Oxford","St Antony’s College, Oxford","St Catherine’s College, Oxford","St Cross College, Oxford","St Edmund Hall, Oxford","St Hilda’s College, Oxford","St Hugh’s College, Oxford","St John’s College, Oxford","St Peter’s College, Oxford","Somerville College, Oxford","Trinity College, Oxford","University College, Oxford","Wadham College, Oxford","Wolfson College, Oxford","Worcester College, Oxford"]],["Cambridge colleges",["Christ’s College, Cambridge","Churchill College, Cambridge","Clare College, Cambridge","Clare Hall, Cambridge","Corpus Christi College, Cambridge","Darwin College, Cambridge","Downing College, Cambridge","Emmanuel College, Cambridge","Fitzwilliam College, Cambridge","Girton College, Cambridge","Gonville and Caius College, Cambridge","Homerton College, Cambridge","Hughes Hall, Cambridge","Jesus College, Cambridge","King’s College, Cambridge","Lucy Cavendish College, Cambridge","Magdalene College, Cambridge","Murray Edwards College, Cambridge","Newnham College, Cambridge","Pembroke College, Cambridge","Peterhouse, Cambridge","Queens’ College, Cambridge","Robinson College, Cambridge","St Catharine’s College, Cambridge","St Edmund’s College, Cambridge","St John’s College, Cambridge","Selwyn College, Cambridge","Sidney Sussex College, Cambridge","Trinity College, Cambridge","Trinity Hall, Cambridge","Wolfson College, Cambridge"]],["Universities",["Aberystwyth University","Anglia Ruskin University","Arts University Bournemouth","Aston University","Bangor University","Bath Spa University","Birkbeck, University of London","Birmingham City University","Bournemouth University","BPP University","Brunel University London","Cardiff Metropolitan University","Cardiff University","City St George’s, University of London","Coventry University","Cranfield University","De Montfort University","Durham University","Edge Hill University","Falmouth University","Glasgow Caledonian University","Goldsmiths, University of London","Harper Adams University","Heriot-Watt University","Imperial College London","Keele University","King’s College London","Kingston University","Lancaster University","Leeds Beckett University","Leeds Trinity University","Liverpool Hope University","Liverpool John Moores University","London Business School","London Metropolitan University","London School of Economics (LSE)","London South Bank University","Loughborough University","Manchester Metropolitan University","Middlesex University","Newcastle University","Newman University","Northumbria University","Norwich University of the Arts","Nottingham Trent University","Open University","Oxford Brookes University","Queen Margaret University","Queen Mary University of London","Queen’s University Belfast","Ravensbourne University London","Robert Gordon University","Royal Holloway, University of London","Royal Veterinary College","SOAS University of London","Sheffield Hallam University","Solent University","St Mary’s University, Twickenham","Staffordshire University","Swansea University","Teesside University","UCL","Ulster University","University for the Creative Arts","University of Aberdeen","University of Abertay Dundee","University of Bath","University of Bedfordshire","University of Birmingham","University of Bolton","University of Bradford","University of Brighton","University of Bristol","University of Buckingham","University of Central Lancashire","University of Chester","University of Chichester","University of Cumbria","University of Derby","University of Dundee","University of East Anglia","University of East London","University of Edinburgh","University of Essex","University of Exeter","University of Glasgow","University of Gloucestershire","University of Greenwich","University of Hertfordshire","University of Huddersfield","University of Hull","University of Kent","University of Leeds","University of Leicester","University of Lincoln","University of Liverpool","University of Manchester","University of Northampton","University of Nottingham","University of Plymouth","University of Portsmouth","University of Reading","University of Roehampton","University of Salford","University of Sheffield","University of Southampton","University of St Andrews","University of Stirling","University of Strathclyde","University of Sunderland","University of Surrey","University of Sussex","University of the Arts London","University of the West of England (UWE Bristol)","University of the West of Scotland","University of Warwick","University of West London","University of Westminster","University of Winchester","University of Wolverhampton","University of Worcester","University of York","Wrexham University","York St John University"]],["Other",["Other university","Not at university"]]];
 function rng(n){return function(){n|=0;n=n+0x6D2B79F5|0;var t=Math.imul(n^n>>>15,1|n);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function shuf(a,rf){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rf()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
-var now=new Date(),KEY=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
-var dayN=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/864e5);
+function fmtKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function keyN(k){var p=k.split("-");return Math.floor(Date.UTC(+p[0],+p[1]-1,+p[2])/864e5)}
+var NOW=new Date(),LIVE=fmtKey(NOW),KEY,now,dayN,DAY,today,st,VIEW="game";
 function mk(r){return{q:r[0],a:r[1],w:[r[2],r[3],r[4]],img:""}}
-var SN=Date.UTC(2026,10,26)/864e5,di=((dayN-SN)%DAYS.length+DAYS.length)%DAYS.length;
-for(var z=0;z<DAYS.length;z++){if(DAYS[z].d===KEY)di=z}
-var DAY=DAYS[di];
-var today=DAY.r.map(function(rd,k){return{s:mk(DAY.s[k]),t:rd.t,b:rd.b.map(mk)}});
-var st={r:0,step:0,score:0,log:[[null,null,null,null],[null,null,null,null],[null,null,null,null]],phase:"ask",done:false,last:null,started:false,t0:0,t1:0};
-try{var sv=localStorage.getItem("ucs5:"+KEY);if(sv){st=JSON.parse(sv)}}catch(e){}
+var SN=Date.UTC(2026,10,26)/864e5;
+function setDay(k){clearTimeout(adv);KEY=k;var p=k.split("-");now=new Date(+p[0],+p[1]-1,+p[2]);dayN=keyN(k);
+var di=((dayN-SN)%DAYS.length+DAYS.length)%DAYS.length;for(var z=0;z<DAYS.length;z++){if(DAYS[z].d===k)di=z}
+DAY=DAYS[di];today=DAY.r.map(function(rd,q){return{s:mk(DAY.s[q]),t:rd.t,b:rd.b.map(mk)}});
+st={r:0,step:0,score:0,log:[[null,null,null,null],[null,null,null,null],[null,null,null,null]],phase:"ask",done:false,last:null,started:false,t0:0,t1:0};
+try{var sv=localStorage.getItem("ucs5:"+k);if(sv){st=JSON.parse(sv)}}catch(e){}}
+setDay(LIVE);
 function save(){try{localStorage.setItem("ucs5:"+KEY,JSON.stringify(st))}catch(e){}}
 function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e}
 function cur(){var s=today[st.r];return st.step===0?s.s:s.b[st.step-1]}
@@ -97,7 +117,10 @@ var h=el("thead");var hr=el("tr");["Round","Starter","Bonus 1","Bonus 2","Bonus 
 var b=el("tbody");today.forEach(function(set,i){var L=st.log[i],tr=el("tr");tr.appendChild(el("td","",(i+1)+(L[0]===1||(st.r===i&&st.step>0)?". "+set.t:".")));
 for(var k=0;k<4;k++){var td=el("td"),bx=el("span","box"+(L[k]===1?" ok":L[k]===0?" bad":"")+(st.r===i&&st.step===k&&!st.done?" cur":""));
 bx.textContent=L[k]===1?"✓":L[k]===0?"✗":"";if(k>0&&L[0]===0)bx.style.opacity=".35";td.appendChild(bx);tr.appendChild(td)}b.appendChild(tr)});t.appendChild(b)}
-function render(){var S=document.getElementById("stage"),bd=document.getElementById("board");S.innerHTML="";bd.hidden=!st.started;
+function render(){var S=document.getElementById("stage"),bd=document.getElementById("board");S.innerHTML="";
+if(VIEW==="lb"){bd.hidden=true;return lbView(S)}
+if(VIEW==="archive"){bd.hidden=true;return archiveView(S)}
+bd.hidden=!st.started;
 if(!st.started){return intro(S)}
 board();
 if(st.done){return finish(S)}
@@ -112,22 +135,41 @@ else b.onclick=function(){answer(o)};box.appendChild(b)});S.appendChild(box);
 if(fb){var ok=st.last.ok;
 S.appendChild(el("p","fb "+(ok?"ok":"bad"),ok?(st.step===0?"Correct. Ten points, and three bonus questions on "+set.t+".":"Correct. Five points."):"Not this time. The answer was "+q.a+"."+(st.step===0?" No bonus questions this round.":"")));
 clearTimeout(adv);adv=setTimeout(advance,ok?(st.step===0?2000:1200):2400)}}
-var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-function intro(S){var prof={};try{prof=JSON.parse(localStorage.getItem("uc:profile"))||{}}catch(e){}
-S.appendChild(el("p","kick",now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})));
-S.appendChild(el("h2","","The "+DAYS[now.getDay()]+" Challenge, No. "+Math.max(1,dayN-20781)));
-S.appendChild(el("p","stand","Three starter questions, ten points each. All three are on one subject today: "+DAY.sub.toLowerCase()+". Answer a starter correctly to win three bonus questions on a set topic, five points each. Twelve questions and 75 points in all."));
-var f=el("div","lbf"),l1=el("label","","Username"),un=el("input");un.type="text";un.maxLength=20;un.autocomplete="off";un.value=prof.u||"";l1.appendChild(un);f.appendChild(l1);
-var l2=el("label","","University or college"),sel=el("select"),o0=el("option","","Choose from the list\u2026");o0.value="";sel.appendChild(o0);
-UNI_GROUPS.forEach(function(g){var og=el("optgroup");og.label=g[0];g[1].forEach(function(n){var o=el("option","",n);o.value=n;og.appendChild(o)});sel.appendChild(og)});
-sel.value=prof.c||"";if(sel.selectedIndex<0)sel.selectedIndex=0;l2.appendChild(sel);f.appendChild(l2);S.appendChild(f);
-S.appendChild(el("p","foot","Your score is added to this week\u2019s leaderboard automatically when you finish."));
-var msg=el("p","lbm","");S.appendChild(msg);
+var WD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var UNI_ALL=[];UNI_GROUPS.forEach(function(g){g[1].forEach(function(n){UNI_ALL.push(n)})});
+function unorm(x){return x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\u2019']/g,"")}
+function combo(init){var w=el("div","cb"),inp=el("input"),ul=el("ul","cbl"),items=[],act=-1;
+inp.type="text";inp.placeholder="University of Bath";inp.autocomplete="off";inp.setAttribute("role","combobox");inp.setAttribute("aria-expanded","false");inp.setAttribute("aria-autocomplete","list");
+inp.value=init&&UNI_ALL.indexOf(init)>-1?init:"";ul.setAttribute("role","listbox");ul.hidden=true;
+function close(){ul.hidden=true;inp.setAttribute("aria-expanded","false");act=-1}
+function pick(n){inp.value=n;close()}
+function paint(){ul.innerHTML="";items.forEach(function(n,i){var li=el("li",i===act?"act":"",n);li.setAttribute("role","option");li.onclick=function(){pick(n)};ul.appendChild(li)});
+if(!items.length){ul.appendChild(el("li","none","No match. Try a different spelling."))}}
+function open(){var q=unorm(inp.value.trim());
+items=UNI_ALL.filter(function(n){return !q||unorm(n).indexOf(q)>-1});
+items.sort(function(a,b){return (unorm(b).indexOf(q)===0)-(unorm(a).indexOf(q)===0)});
+act=-1;paint();ul.hidden=false;inp.setAttribute("aria-expanded","true")}
+inp.oninput=open;inp.onfocus=open;inp.onblur=close;
+inp.onkeydown=function(e){if(ul.hidden&&(e.key==="ArrowDown"))open();
+if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();if(!items.length)return;act=(act+(e.key==="ArrowDown"?1:-1)+items.length)%items.length;paint();var a=ul.querySelector(".act");if(a&&a.scrollIntoView)a.scrollIntoView({block:"nearest"})}
+else if(e.key==="Enter"){if(!ul.hidden&&act>-1){e.preventDefault();pick(items[act])}else if(!ul.hidden&&items.length===1){e.preventDefault();pick(items[0])}}
+else if(e.key==="Escape"){close()}};
+ul.onmousedown=function(e){e.preventDefault()};
+w.appendChild(inp);w.appendChild(ul);
+return{wrap:w,get:function(){var v=unorm(inp.value.trim());return UNI_ALL.filter(function(n){return unorm(n)===v})[0]||""}}}
+function intro(S){var arch=KEY!==LIVE,prof={};try{prof=JSON.parse(localStorage.getItem("uc:profile"))||{}}catch(e){}
+S.appendChild(el("p","kick",now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+(arch?" \u00b7 Archive":"")));
+S.appendChild(el("h2","","The "+WD[now.getDay()]+" Challenge, No. "+Math.max(1,dayN-20782)));
+S.appendChild(el("p","stand","Three starter questions, ten points each. All three are on one subject: "+DAY.sub.toLowerCase()+". Answer a starter correctly to win three bonus questions on a set topic, five points each. Twelve questions and 75 points in all."+(arch?" Archive games don\u2019t count towards the leaderboard.":"")));
+var un,sel,msg=el("p","lbm","");
+if(!arch){var f=el("div","lbf"),l1=el("label","","Username");un=el("input");un.type="text";un.maxLength=20;un.autocomplete="off";un.value=prof.u||"";l1.appendChild(un);f.appendChild(l1);
+var l2=el("label","","University or college");sel=combo(prof.c);l2.appendChild(sel.wrap);f.appendChild(l2);S.appendChild(f)}
+S.appendChild(msg);
 var b=el("button","go","Begin");
-b.onclick=function(){var u=un.value.trim().replace(/\s+/g," ");if(u.length<2){msg.textContent="Please enter a username of at least two characters.";return}if(!sel.value){msg.textContent="Please choose your university or college from the list.";return}
-st.prof={u:u,c:sel.value};try{localStorage.setItem("uc:profile",JSON.stringify(st.prof))}catch(e){}
+b.onclick=function(){if(!arch){var u=un.value.trim().replace(/\s+/g," ");if(u.length<2){msg.textContent="Please enter a username of at least two characters.";return}var cv=sel.get();if(!cv){msg.textContent="Please choose your university or college from the list. Start typing to search.";return}
+st.prof={u:u,c:cv};try{localStorage.setItem("uc:profile",JSON.stringify(st.prof))}catch(e){}}
 st.started=true;st.t0=Date.now();save();render()};
-S.appendChild(b);var l=el("button","go alt","Weekly leaderboard");l.onclick=lbPage;S.appendChild(l)}
+S.appendChild(b)}
 function api(method,body){return fetch("/api/leaderboard",{method:method,headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined}).catch(function(){throw new Error("The leaderboard isn\u2019t available right now.")}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw new Error(j.error||"The leaderboard isn\u2019t available right now.");return j})})}
 function showLB(box,prof){box.appendChild(el("h3","lbh","This week\u2019s leaderboard"));
 var info=el("p","foot","Loading\u2026");box.appendChild(info);
@@ -138,12 +180,32 @@ var t=el("table","board lbt"),h=el("thead"),hr=el("tr");["#","Player","Universit
 var tb=el("tbody");d.players.forEach(function(p,i){var mine=prof&&p.username.toLowerCase()===(prof.u||"").toLowerCase()&&p.university===(prof.c||"");
 if(i<20||mine){var tr=el("tr",mine?"me":"");[i+1,p.username,p.university,p.total].forEach(function(x){tr.appendChild(el("td","",String(x)))});tb.appendChild(tr)}});
 t.appendChild(tb);box.appendChild(t)}).catch(function(e){info.textContent=e.message})}
-function lbPage(){var S=document.getElementById("stage");S.innerHTML="";var prof=st.prof;if(!prof){try{prof=JSON.parse(localStorage.getItem("uc:profile"))}catch(e){}}
-var box=el("div","lbx");S.appendChild(box);showLB(box,prof);var bk=el("button","go","Back");bk.onclick=render;S.appendChild(bk)}
+function lbView(S){var prof=st&&st.prof;if(!prof){try{prof=JSON.parse(localStorage.getItem("uc:profile"))}catch(e){}}
+var box=el("div","lbx");S.appendChild(box);showLB(box,prof)}
+function archiveKeys(){return DAYS.map(function(d){return d.d}).filter(function(k){return k<LIVE}).sort().reverse()}
+function archiveView(S){S.appendChild(el("p","kick","Archive"));S.appendChild(el("h2","","Past quizzes"));
+var ks=archiveKeys();
+if(!ks.length){S.appendChild(el("p","stand","Earlier quizzes will appear here from tomorrow. Archive games don\u2019t count towards the leaderboard."));return}
+S.appendChild(el("p","stand","Play any earlier quiz. Archive games don\u2019t count towards the leaderboard."));
+var list=el("div","arch");ks.forEach(function(k){var d=DAYS.filter(function(x){return x.d===k})[0],p=k.split("-"),dt=new Date(+p[0],+p[1]-1,+p[2]),sv=null;
+try{sv=JSON.parse(localStorage.getItem("ucs5:"+k))}catch(e){}
+var a=el("a","arow"),l=el("span","aleft");a.href="#archive-"+k;
+l.appendChild(el("b","",dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})));l.appendChild(el("span","",d.sub));
+a.appendChild(l);a.appendChild(el("span","ares",sv&&sv.done?sv.score+" / 75":sv&&sv.started?"In progress":"Play"));list.appendChild(a)});
+S.appendChild(list)}
+function nav(){var n=document.getElementById("navin");n.innerHTML="";
+[["#game","Today\u2019s game",VIEW==="game"],["#archive","Archive",VIEW==="archive"||VIEW==="play"],["#leaderboard","Leaderboard",VIEW==="lb"]].forEach(function(x){var a=el("a",x[2]?"on":"",x[1]);a.href=x[0];if(x[2])a.setAttribute("aria-current","page");n.appendChild(a)})}
+function route(){var h=(location.hash||"").slice(1);clearTimeout(adv);
+if(h==="leaderboard"){VIEW="lb"}
+else if(h==="archive"){VIEW="archive"}
+else if(/^archive-\d{4}-\d{2}-\d{2}$/.test(h)){var k=h.slice(8);if(archiveKeys().indexOf(k)<0){location.hash="archive";return}VIEW="play";if(KEY!==k)setDay(k)}
+else{VIEW="game";if(KEY!==LIVE)setDay(LIVE)}
+nav();render();window.scrollTo(0,0)}
 var subbing=false,subErr="";
-function submitScore(done){if(st.submitted||subbing||!st.prof)return;subbing=true;subErr="";
+function submitScore(done){if(KEY!==LIVE||st.submitted||subbing||!st.prof)return;subbing=true;subErr="";
 api("POST",{username:st.prof.u,university:st.prof.c,score:st.score,date:KEY}).then(function(){st.submitted=true;save()}).catch(function(e){subErr=e.message}).then(function(){subbing=false;if(done)done()})}
-function finalLB(S){var box=el("div","lbx"),msg=el("p","foot",""),rt=el("button","go alt","Try again"),v=el("button","go","View leaderboard");rt.style.marginLeft="0";v.onclick=lbPage;
+function finalLB(S){if(KEY!==LIVE){var bx=el("div","lbx"),ba=el("a","go","Back to the archive");bx.appendChild(el("p","foot","Archive games don’t count towards the leaderboard."));ba.href="#archive";bx.appendChild(ba);S.appendChild(bx);return}
+var box=el("div","lbx"),msg=el("p","foot",""),rt=el("button","go alt","Try again"),v=el("button","go","View leaderboard");rt.style.marginLeft="0";v.onclick=function(){location.hash="leaderboard"};
 function paint(){if(!st.prof){msg.textContent="";rt.hidden=true;return}
 if(st.submitted){msg.textContent="Your score has been added to this week\u2019s leaderboard.";rt.hidden=true}
 else if(subbing){msg.textContent="Saving your score\u2026";rt.hidden=true}
@@ -154,7 +216,7 @@ if(!st.submitted&&!subbing){submitScore(paint)}paint()}
 var adv=0,SITE="https://starter-for-ten.vercel.app";
 function lastStep(){return st.r===2&&(st.step===3||(st.step===0&&!st.last.ok))}
 function answer(o){var q=cur(),ok=o===q.a;st.log[st.r][st.step]=ok?1:0;if(ok)st.score+=st.step===0?10:5;st.last={ok:ok,pick:o};st.phase="fb";save();render()}
-function advance(){clearTimeout(adv);if(st.phase!=="fb")return;var ok=st.last.ok;
+function advance(){clearTimeout(adv);if(st.phase!=="fb"||(VIEW!=="game"&&VIEW!=="play"))return;var ok=st.last.ok;
 if(st.step===0&&ok){st.step=1}else if(st.step>0&&st.step<3){st.step++}else{if(st.r===2){st.done=true;st.t1=Date.now()}else{st.r++;st.step=0}}
 st.phase="ask";save();render()}
 function finish(S){var t=st.score>=60?"Professor":st.score>=40?"Fellow":st.score>=20?"Graduate":"Fresher";
@@ -165,10 +227,11 @@ S.appendChild(el("pre","",txt));
 var b=el("button","go","Copy result");b.onclick=function(){try{navigator.clipboard.writeText(txt+"\n"+SITE).then(function(){b.textContent="Copied"},function(){b.textContent="Select the text above to copy"})}catch(e){b.textContent="Select the text above to copy"}};S.appendChild(b);
 if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent))){var w=el("a","go wa","Share on WhatsApp");w.href="https://wa.me/?text="+encodeURIComponent(txt+"\n"+SITE);w.target="_blank";w.rel="noopener";S.appendChild(w)}
 finalLB(S);
+if(KEY!==LIVE)return;
 var m=el("p","foot","");S.appendChild(m);
 function tick(){var n=new Date(),nx=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.floor((nx-n)/1000);m.textContent="Next challenge in "+Math.floor(s/3600)+"h "+String(Math.floor(s%3600/60)).padStart(2,"0")+"m."}
 tick();setInterval(tick,30000)}
-render();
+window.addEventListener("hashchange",route);route();
 </script>
 </body>
 </html>
