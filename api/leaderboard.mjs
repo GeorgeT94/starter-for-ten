@@ -1,0 +1,305 @@
+// Weekly leaderboard API for Vercel. Self-contained: no other project files needed.
+// ESM (.mjs), so it works whatever your package.json "type" is.
+
+// Selectable universities and colleges (must match the list in the game page).
+const ALL = [
+  "All Souls College, Oxford",
+  "Balliol College, Oxford",
+  "Brasenose College, Oxford",
+  "Christ Church, Oxford",
+  "Corpus Christi College, Oxford",
+  "Exeter College, Oxford",
+  "Green Templeton College, Oxford",
+  "Harris Manchester College, Oxford",
+  "Hertford College, Oxford",
+  "Jesus College, Oxford",
+  "Keble College, Oxford",
+  "Kellogg College, Oxford",
+  "Lady Margaret Hall, Oxford",
+  "Linacre College, Oxford",
+  "Lincoln College, Oxford",
+  "Magdalen College, Oxford",
+  "Mansfield College, Oxford",
+  "Merton College, Oxford",
+  "New College, Oxford",
+  "Nuffield College, Oxford",
+  "Oriel College, Oxford",
+  "Pembroke College, Oxford",
+  "The Queen’s College, Oxford",
+  "Reuben College, Oxford",
+  "St Anne’s College, Oxford",
+  "St Antony’s College, Oxford",
+  "St Catherine’s College, Oxford",
+  "St Cross College, Oxford",
+  "St Edmund Hall, Oxford",
+  "St Hilda’s College, Oxford",
+  "St Hugh’s College, Oxford",
+  "St John’s College, Oxford",
+  "St Peter’s College, Oxford",
+  "Somerville College, Oxford",
+  "Trinity College, Oxford",
+  "University College, Oxford",
+  "Wadham College, Oxford",
+  "Wolfson College, Oxford",
+  "Worcester College, Oxford",
+  "Christ’s College, Cambridge",
+  "Churchill College, Cambridge",
+  "Clare College, Cambridge",
+  "Clare Hall, Cambridge",
+  "Corpus Christi College, Cambridge",
+  "Darwin College, Cambridge",
+  "Downing College, Cambridge",
+  "Emmanuel College, Cambridge",
+  "Fitzwilliam College, Cambridge",
+  "Girton College, Cambridge",
+  "Gonville and Caius College, Cambridge",
+  "Homerton College, Cambridge",
+  "Hughes Hall, Cambridge",
+  "Jesus College, Cambridge",
+  "King’s College, Cambridge",
+  "Lucy Cavendish College, Cambridge",
+  "Magdalene College, Cambridge",
+  "Murray Edwards College, Cambridge",
+  "Newnham College, Cambridge",
+  "Pembroke College, Cambridge",
+  "Peterhouse, Cambridge",
+  "Queens’ College, Cambridge",
+  "Robinson College, Cambridge",
+  "St Catharine’s College, Cambridge",
+  "St Edmund’s College, Cambridge",
+  "St John’s College, Cambridge",
+  "Selwyn College, Cambridge",
+  "Sidney Sussex College, Cambridge",
+  "Trinity College, Cambridge",
+  "Trinity Hall, Cambridge",
+  "Wolfson College, Cambridge",
+  "Aberystwyth University",
+  "Anglia Ruskin University",
+  "Arts University Bournemouth",
+  "Aston University",
+  "Bangor University",
+  "Bath Spa University",
+  "Birkbeck, University of London",
+  "Birmingham City University",
+  "Bournemouth University",
+  "BPP University",
+  "Brunel University London",
+  "Cardiff Metropolitan University",
+  "Cardiff University",
+  "City St George’s, University of London",
+  "Coventry University",
+  "Cranfield University",
+  "De Montfort University",
+  "Durham University",
+  "Edge Hill University",
+  "Falmouth University",
+  "Glasgow Caledonian University",
+  "Goldsmiths, University of London",
+  "Harper Adams University",
+  "Heriot-Watt University",
+  "Imperial College London",
+  "Keele University",
+  "King’s College London",
+  "Kingston University",
+  "Lancaster University",
+  "Leeds Beckett University",
+  "Leeds Trinity University",
+  "Liverpool Hope University",
+  "Liverpool John Moores University",
+  "London Business School",
+  "London Metropolitan University",
+  "London School of Economics (LSE)",
+  "London South Bank University",
+  "Loughborough University",
+  "Manchester Metropolitan University",
+  "Middlesex University",
+  "Newcastle University",
+  "Newman University",
+  "Northumbria University",
+  "Norwich University of the Arts",
+  "Nottingham Trent University",
+  "Open University",
+  "Oxford Brookes University",
+  "Queen Margaret University",
+  "Queen Mary University of London",
+  "Queen’s University Belfast",
+  "Ravensbourne University London",
+  "Robert Gordon University",
+  "Royal Holloway, University of London",
+  "Royal Veterinary College",
+  "SOAS University of London",
+  "Sheffield Hallam University",
+  "Solent University",
+  "St Mary’s University, Twickenham",
+  "Staffordshire University",
+  "Swansea University",
+  "Teesside University",
+  "UCL",
+  "Ulster University",
+  "University for the Creative Arts",
+  "University of Aberdeen",
+  "University of Abertay Dundee",
+  "University of Bath",
+  "University of Bedfordshire",
+  "University of Birmingham",
+  "University of Bolton",
+  "University of Bradford",
+  "University of Brighton",
+  "University of Bristol",
+  "University of Buckingham",
+  "University of Central Lancashire",
+  "University of Chester",
+  "University of Chichester",
+  "University of Cumbria",
+  "University of Derby",
+  "University of Dundee",
+  "University of East Anglia",
+  "University of East London",
+  "University of Edinburgh",
+  "University of Essex",
+  "University of Exeter",
+  "University of Glasgow",
+  "University of Gloucestershire",
+  "University of Greenwich",
+  "University of Hertfordshire",
+  "University of Huddersfield",
+  "University of Hull",
+  "University of Kent",
+  "University of Leeds",
+  "University of Leicester",
+  "University of Lincoln",
+  "University of Liverpool",
+  "University of Manchester",
+  "University of Northampton",
+  "University of Nottingham",
+  "University of Plymouth",
+  "University of Portsmouth",
+  "University of Reading",
+  "University of Roehampton",
+  "University of Salford",
+  "University of Sheffield",
+  "University of Southampton",
+  "University of St Andrews",
+  "University of Stirling",
+  "University of Strathclyde",
+  "University of Sunderland",
+  "University of Surrey",
+  "University of Sussex",
+  "University of the Arts London",
+  "University of the West of England (UWE Bristol)",
+  "University of the West of Scotland",
+  "University of Warwick",
+  "University of West London",
+  "University of Westminster",
+  "University of Winchester",
+  "University of Wolverhampton",
+  "University of Worcester",
+  "University of York",
+  "Wrexham University",
+  "York St John University",
+  "Other university",
+  "Not at university"
+];
+
+const DAY = 864e5;
+const ukToday = () =>
+  new Date().toLocaleDateString("en-CA", { timeZone: "Europe/London" }); // YYYY-MM-DD
+
+// Monday of the week containing the given YYYY-MM-DD date
+function weekStart(dateStr) {
+  const d = new Date(dateStr + "T00:00:00Z");
+  const dow = (d.getUTCDay() + 6) % 7;
+  return new Date(d.getTime() - dow * DAY).toISOString().slice(0, 10);
+}
+
+const clean = (s, max) =>
+  String(s || "")
+    .replace(/[\u0000-\u001f<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+
+const parse = (v) => (typeof v === "string" ? JSON.parse(v) : v);
+
+let redis, ALLOWED;
+async function init() {
+  if (redis) return;
+  const { Redis } = await import("@upstash/redis");
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  if (!url || !token) throw new Error("Redis environment variables are missing");
+  redis = new Redis({ url, token });
+  ALLOWED = new Set(ALL);
+}
+
+export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+  try {
+    await init();
+
+    if (req.method === "GET") {
+      const week = weekStart(ukToday());
+      const raw = (await redis.hgetall("lb:" + week)) || {};
+      const players = Object.values(raw)
+        .map(parse)
+        .map((p) => ({
+          username: p.u,
+          university: p.c,
+          total: Object.values(p.days).reduce((a, b) => a + b, 0),
+          days: Object.keys(p.days).length,
+        }))
+        .sort(
+          (a, b) =>
+            b.total - a.total ||
+            b.days - a.days ||
+            a.username.localeCompare(b.username)
+        )
+        .slice(0, 100);
+      return res.status(200).json({ week, players });
+    }
+
+    if (req.method === "POST") {
+      const b = req.body || {};
+      const u = clean(b.username, 20);
+      const c = String(b.university || "");
+      const score = Number(b.score);
+      const date = String(b.date || "");
+
+      if (u.length < 2)
+        return res.status(400).json({ error: "Please enter a username." });
+      if (!ALLOWED.has(c))
+        return res.status(400).json({ error: "Please choose a university from the list." });
+      if (!Number.isInteger(score) || score < 0 || score > 75 || score % 5 !== 0)
+        return res.status(400).json({ error: "Invalid score." });
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
+        return res.status(400).json({ error: "Invalid date." });
+      const diff =
+        Math.abs(new Date(date + "T00:00:00Z") - new Date(ukToday() + "T00:00:00Z")) / DAY;
+      if (!(diff <= 1))
+        return res.status(400).json({ error: "That quiz date isn’t valid." });
+
+      const key = "lb:" + weekStart(date);
+      const field = (u + "|" + c).toLowerCase();
+      const cur = await redis.hget(key, field);
+      const p = cur ? parse(cur) : { u, c, days: {} };
+
+      // first submission for a given day counts; later ones are ignored
+      if (p.days[date] === undefined) {
+        p.days[date] = score;
+        p.u = u;
+        p.c = c;
+        await redis.hset(key, { [field]: JSON.stringify(p) });
+        await redis.expire(key, 60 * 60 * 24 * 28);
+      }
+      return res.status(200).json({ ok: true });
+    }
+
+    res.setHeader("Allow", "GET, POST");
+    return res.status(405).json({ error: "Method not allowed." });
+  } catch (e) {
+    console.error("leaderboard error:", e);
+    const body = { error: "The leaderboard isn’t set up correctly yet." };
+    if (req.query && req.query.debug === "1") body.detail = String(e && e.message);
+    return res.status(500).json(body);
+  }
+}
