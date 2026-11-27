@@ -47,6 +47,17 @@ figcaption{font-size:.85rem;color:var(--mute);margin-top:6px}
 .go{margin-top:16px;font:inherit;font-weight:700;padding:12px 22px;background:var(--blue);color:#fff;border:0;border-radius:2px;cursor:pointer}
 .go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .wa{display:inline-block;text-decoration:none;margin-left:10px;background:#1e8e4f;color:#fff}
+.lbh{font:900 1.4rem/1.2 "Playfair Display",Georgia,serif;margin:28px 0 4px;border-top:3px solid var(--rule);padding-top:12px}
+.lbf{display:grid;gap:10px;margin:14px 0}
+.lbf label{font-weight:700;font-size:.9rem;display:grid;gap:4px}
+.lbf input{font:inherit;padding:11px 12px;border:1.5px solid var(--ink);border-radius:0;background:#fff;color:var(--ink)}
+.lbf input:focus-visible{outline:3px solid var(--blue);outline-offset:1px}
+.lbm{color:var(--bad);font-weight:600;min-height:1.4em;margin:0}
+.lbt{font-size:.9rem}
+.lbt th:nth-child(2),.lbt th:nth-child(3),.lbt td:nth-child(2),.lbt td:nth-child(3){text-align:left}
+.lbt td:last-child{font-weight:700}
+.lbt tr.me td{background:var(--soft);font-weight:700}
+.alt{background:transparent;color:var(--ink);border:1.5px solid var(--ink);margin-left:10px}
 .score{font:900 3.4rem/1 "Playfair Display",Georgia,serif;margin:4px 0 6px}
 pre{background:var(--soft);padding:12px;font:inherit;line-height:1.6;white-space:pre-wrap;margin:14px 0}
 .foot{color:var(--mute);font-size:.9rem;margin-top:14px}
@@ -103,7 +114,33 @@ var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"
 function intro(S){S.appendChild(el("p","kick",now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})));
 S.appendChild(el("h2","","The "+DAYS[now.getDay()]+" Challenge, No. "+Math.max(1,dayN-20781)));
 S.appendChild(el("p","stand","Three starter questions, ten points each. All three are on one subject today: "+DAY.sub.toLowerCase()+". Answer a starter correctly to win three bonus questions on a set topic, five points each. Twelve questions and 75 points in all. The clock starts when you begin."));
-var b=el("button","go","Begin");b.onclick=function(){st.started=true;st.t0=Date.now();save();render()};S.appendChild(b);b.focus()}
+var b=el("button","go","Begin");b.onclick=function(){st.started=true;st.t0=Date.now();save();render()};S.appendChild(b);var l=el("button","go alt","Weekly leaderboard");l.onclick=lbPage;S.appendChild(l);b.focus()}
+function api(method,body){return fetch("/api/leaderboard",{method:method,headers:body?{"Content-Type":"application/json"}:{},body:body?JSON.stringify(body):undefined}).catch(function(){throw new Error("The leaderboard isn’t available right now.")}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw new Error(j.error||"The leaderboard isn’t available right now.");return j})})}
+function showLB(box,prof){box.appendChild(el("h3","lbh","This week’s leaderboard"));
+var info=el("p","foot","Loading…");box.appendChild(info);
+api("GET").then(function(d){var wk=new Date(d.week+"T00:00:00Z");
+info.textContent="Week commencing Monday "+wk.toLocaleDateString("en-GB",{day:"numeric",month:"long",timeZone:"UTC"})+". Totals reset every Monday.";
+if(!d.players.length){info.textContent+=" No scores yet, so be the first.";return}
+var t=el("table","board lbt"),h=el("thead"),hr=el("tr");["#","Player","University","Points"].forEach(function(x){hr.appendChild(el("th","",x))});h.appendChild(hr);t.appendChild(h);
+var tb=el("tbody");d.players.forEach(function(p,i){var mine=prof&&p.username.toLowerCase()===(prof.u||"").toLowerCase()&&p.university.toLowerCase()===(prof.c||"").toLowerCase();
+if(i<20||mine){var tr=el("tr",mine?"me":"");[i+1,p.username,p.university,p.total].forEach(function(x){tr.appendChild(el("td","",String(x)))});tb.appendChild(tr)}});
+t.appendChild(tb);box.appendChild(t)}).catch(function(e){info.textContent=e.message})}
+function lbSection(S){var box=el("div","lbx");S.appendChild(box);var prof={};try{prof=JSON.parse(localStorage.getItem("uc:profile"))||{}}catch(e){}
+if(st.submitted){showLB(box,prof);return}
+box.appendChild(el("h3","lbh","Join the weekly leaderboard"));
+box.appendChild(el("p","foot","Add today’s score under a username and your university. Totals reset every Monday."));
+var f=el("div","lbf");
+function fld(lab,val,max){var l=el("label","",lab),i=el("input");i.type="text";i.maxLength=max;i.value=val||"";i.autocomplete="off";l.appendChild(i);f.appendChild(l);return i}
+var un=fld("Username",prof.u,20),uv=fld("University",prof.c,40);box.appendChild(f);
+var msg=el("p","lbm","");box.appendChild(msg);
+var btn=el("button","go","Submit my score");
+btn.onclick=function(){var u=un.value.trim(),c=uv.value.trim();if(u.length<2||c.length<2){msg.textContent="Please enter a username and a university, at least two characters each.";return}
+btn.disabled=true;msg.textContent="Saving…";
+api("POST",{username:u,university:c,score:st.score,date:KEY}).then(function(){try{localStorage.setItem("uc:profile",JSON.stringify({u:u,c:c}))}catch(e){}
+st.submitted=true;save();box.innerHTML="";showLB(box,{u:u,c:c})}).catch(function(e){msg.textContent=e.message;btn.disabled=false})};
+box.appendChild(btn)}
+function lbPage(){var S=document.getElementById("stage");S.innerHTML="";var prof={};try{prof=JSON.parse(localStorage.getItem("uc:profile"))||{}}catch(e){}
+var box=el("div","lbx");S.appendChild(box);showLB(box,prof);var bk=el("button","go","Back");bk.onclick=render;S.appendChild(bk)}
 var adv=0,SITE="https://starter-for-ten.vercel.app";
 function lastStep(){return st.r===2&&(st.step===3||(st.step===0&&!st.last.ok))}
 function answer(o){var q=cur(),ok=o===q.a;st.log[st.r][st.step]=ok?1:0;if(ok)st.score+=st.step===0?10:5;st.last={ok:ok,pick:o};st.phase="fb";save();render()}
@@ -117,6 +154,7 @@ var txt="Starter for Ten "+KEY+"\n"+lines.join("\n")+"\nScore: "+st.score+"/75";
 S.appendChild(el("pre","",txt));
 var b=el("button","go","Copy result");b.onclick=function(){try{navigator.clipboard.writeText(txt+"\n"+SITE).then(function(){b.textContent="Copied"},function(){b.textContent="Select the text above to copy"})}catch(e){b.textContent="Select the text above to copy"}};S.appendChild(b);
 if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent))){var w=el("a","go wa","Share on WhatsApp");w.href="https://wa.me/?text="+encodeURIComponent(txt+"\n"+SITE);w.target="_blank";w.rel="noopener";S.appendChild(w)}
+lbSection(S);
 var m=el("p","foot","");S.appendChild(m);
 function tick(){var n=new Date(),nx=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.floor((nx-n)/1000);m.textContent="Next challenge in "+Math.floor(s/3600)+"h "+String(Math.floor(s%3600/60)).padStart(2,"0")+"m."}
 tick();setInterval(tick,30000)}
