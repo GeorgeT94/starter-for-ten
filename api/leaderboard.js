@@ -1,5 +1,8 @@
 const { Redis } = require("@upstash/redis");
 
+const { ALL } = require("../lib/universities.js");
+const ALLOWED = new Set(ALL);
+
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
@@ -52,12 +55,14 @@ module.exports = async (req, res) => {
     if (req.method === "POST") {
       const b = req.body || {};
       const u = clean(b.username, 20);
-      const c = clean(b.university, 40);
+      const c = String(b.university || "");
       const score = Number(b.score);
       const date = String(b.date || "");
 
-      if (u.length < 2 || c.length < 2)
-        return res.status(400).json({ error: "Please enter a username and a university." });
+      if (u.length < 2)
+        return res.status(400).json({ error: "Please enter a username." });
+      if (!ALLOWED.has(c))
+        return res.status(400).json({ error: "Please choose a university from the list." });
       if (!Number.isInteger(score) || score < 0 || score > 75 || score % 5 !== 0)
         return res.status(400).json({ error: "Invalid score." });
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date))
